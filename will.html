@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Ular Classic</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body {
+            background-color: #1a1a2e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+        h2 {
+            margin-bottom: 5px;
+            color: #00fff0;
+        }
+        #skor {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        canvas {
+            background-color: #16213e;
+            border: 3px solid #00fff0;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 255, 240, 0.3);
+            max-width: 100%;
+        }
+        /* Tombol Kontrol HP */
+        .d-pad {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 5px;
+            justify-content: center;
+        }
+        .btn {
+            background-color: #0f3460;
+            color: white;
+            border: 2px solid #00fff0;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .btn:active {
+            background-color: #e94560;
+        }
+        .btn-up { grid-column: 2; grid-row: 1; }
+        .btn-left { grid-column: 1; grid-row: 2; }
+        .btn-right { grid-column: 3; grid-row: 2; }
+        .btn-down { grid-column: 2; grid-row: 3; }
+        #game-over {
+            color: #e94560;
+            font-weight: bold;
+            margin-top: 10px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>🐍 GAME ULAR 🍎</h2>
+    <div id="skor">Skor: 0</div>
+    <canvas id="gameCanvas" width="300" height="300"></canvas>
+    <div id="game-over"></div>
+
+    <!-- Kontrol untuk Layar Sentuh HP -->
+    <div class="d-pad">
+        <button class="btn btn-up" onclick="ubahArah('UP')">▲</button>
+        <button class="btn btn-left" onclick="ubahArah('LEFT')">◄</button>
+        <button class="btn btn-right" onclick="ubahArah('RIGHT')">►</button>
+        <button class="btn btn-down" onclick="ubahArah('DOWN')">▼</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const grid = 15; // Ukuran kotak
+        let skor = 0;
+        let gameLoop;
+        let isGameOver = false;
+
+        // Karakter Ular
+        let ular = [
+            { x: 150, y: 150 },
+            { x: 135, y: 150 },
+            { x: 120, y: 150 }
+        ];
+
+        // Arah jalan awal (ke kanan)
+        let dx = grid;
+        let dy = 0;
+
+        // Makanan
+        let makanan = buatMakanan();
+
+        // Jalan Game
+        function main() {
+            if (isGameOver) return;
+
+            gameLoop = setTimeout(function() {
+                bersihkanLayar();
+                gambarMakanan();
+                jalanUlar();
+                gambarUlar();
+                main();
+            }, 120); // Kecepatan gerak (makin kecil makin cepat)
+        }
+
+        function bersihkanLayar() {
+            ctx.fillStyle = "#16213e";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function gambarUlar() {
+            ular.forEach((bagian, index) => {
+                // Kepala beda warna sama badan
+                ctx.fillStyle = index === 0 ? "#00fff0" : "#4e9f3d";
+                ctx.fillRect(bagian.x, bagian.y, grid - 1, grid - 1);
+            });
+        }
+
+        function jalanUlar() {
+            const kepalaBaru = { x: ular[0].x + dx, y: ular[0].y + dy };
+
+            // Cek Nabrak Tembok
+            if (kepalaBaru.x < 0 || kepalaBaru.x >= canvas.width || kepalaBaru.y < 0 || kepalaBaru.y >= canvas.height) {
+                gameOver();
+                return;
+            }
+
+            // Cek Nabrak Badan Sendiri
+            for (let i = 0; i < ular.length; i++) {
+                if (kepalaBaru.x === ular[i].x && kepalaBaru.y === ular[i].y) {
+                    gameOver();
+                    return;
+                }
+            }
+
+            ular.unshift(kepalaBaru);
+
+            // Cek Makan Makanan
+            if (ular[0].x === makanan.x && ular[0].y === makanan.y) {
+                skor += 10;
+                document.getElementById("skor").innerText = "Skor: " + skor;
+                makanan = buatMakanan();
+            } else {
+                ular.pop(); // Hapus buntut kalau gak makan
+            }
+        }
+
+        function buatMakanan() {
+            let x = Math.floor(Math.random() * (canvas.width / grid)) * grid;
+            let y = Math.floor(Math.random() * (canvas.height / grid)) * grid;
+            return { x, y };
+        }
+
+        function gambarMakanan() {
+            ctx.fillStyle = "#e94560";
+            ctx.fillRect(makanan.x, makanan.y, grid - 1, grid - 1);
+        }
+
+        function ubahArah(arah) {
+            if (arah === 'LEFT' && dx === 0) { dx = -grid; dy = 0; }
+            if (arah === 'UP' && dy === 0) { dx = 0; dy = -grid; }
+            if (arah === 'RIGHT' && dx === 0) { dx = grid; dy = 0; }
+            if (arah === 'DOWN' && dy === 0) { dx = 0; dy = grid; }
+        }
+
+        // Kontrol Keyboard untuk Laptop/PC
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "ArrowLeft") ubahArah('LEFT');
+            if (e.key === "ArrowUp") ubahArah('UP');
+            if (e.key === "ArrowRight") ubahArah('RIGHT');
+            if (e.key === "ArrowDown") ubahArah('DOWN');
+        });
+
+        function gameOver() {
+            isGameOver = true;
+            document.getElementById("game-over").innerText = "GAME OVER! Tap tombol untuk reset.";
+            setTimeout(() => {
+                if (confirm("Game Over! Skor kamu: " + skor + "\nMain lagi?")) {
+                    location.reload();
+                }
+            }, 100);
+        }
+
+        // Jalankan game
+        main();
+    </script>
+</body>
+</html>
