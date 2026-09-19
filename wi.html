@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>I Love you ❤️</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, hsl(180, 100%, 80%), hwb(221 20% 1%));
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background: rgb(107, 244, 251);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px oklch(35.412% 0.23496 268.004 / 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            color: #5036ad;
+        }
+
+        p {
+            color: hsl(212, 88%, 56%);
+            font-size: 18px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            background: lab(60.41% 8.12 -58.43);
+            color: #75bbf8;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            background: hsl(262, 99%, 49%);
+        }
+
+        /* HATI */
+        .heart {
+            position: fixed;
+            bottom: -30px;
+            font-size: 25px;
+            animation: terbang 4s linear forwards;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes terbang {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* PESAN */
+        .pesan {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: blue(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .kotak-pesan {
+            background: white;
+            padding: 35px;
+            width: 350px;
+            max-width: 90%;
+            border-radius: 25px;
+            text-align: center;
+            animation: muncul 0.5s ease;
+            box-shadow: 0 10px 40px blue(0,0,0,0.3);
+        }
+
+        .kotak-pesan h2 {
+            color: hsl(249, 97%, 50%);
+        }
+
+        .kotak-pesan .big-heart {
+            font-size: 60px;
+            animation: detak 0.8s infinite alternate;
+        }
+
+        @keyframes muncul {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes detak {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.25);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>I Love you </h1>
+
+        <p>from sena</p>
+
+        <button onclick="klik()">
+            Klik 
+        </button>
+    </div>
+
+
+    <!-- PESAN YANG MUNCUL -->
+    <div class="pesan" id="pesan">
+
+        <div class="kotak-pesan">
+
+            <div class="big-heart"></div>
+
+            <h2>Aku sayang kamu </h2>
+
+            <p>
+                di antara riuhnya dunia,
+                entah mengapa,
+                hatiku selalu menemukan tenang
+                saat mengingatmu.
+                bukan karena kamu sempurna,
+                bukan pula karena semuanya mudah,
+                tapi karena bersamamu
+                hal-hal sederhana terasa begitu indah.
+                jika suatu hari langit kehilangan bintangnya,
+                biarlah aku tetap punya satu cahaya senyummu,
+                yang diam-diam selalu menjadi rumah.
+                i love you,
+                dalam diam,
+                dalam doa,
+                dalam setiap detik
+                yang tak pernah sempat kujelaskan. ♡. 
+            </p>
+
+            <button onclick="tutupPesan()">
+                Oke 
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function klik() {
+
+            // Menampilkan pesan
+            document.getElementById("pesan").style.display = "flex";
+
+            // Membuat banyak hati
+            for (let i = 0; i < 20; i++) {
+                buatHati();
+            }
+        }
+
+
+        function buatHati() {
+
+            const hati = document.createElement("div");
+
+            hati.classList.add("heart");
+
+            hati.innerHTML = "♡";
+
+            // Posisi horizontal acak
+            hati.style.left = Math.random() * 100 + "vw";
+
+            // Ukuran acak
+            hati.style.fontSize =
+                (10 + Math.random() * 16) + "px";
+
+            // Kecepatan acak
+            hati.style.animationDuration =
+                (3 + Math.random() * 3) + "s";
+
+            document.body.appendChild(hati);
+
+            // Hapus hati setelah animasi selesai
+            setTimeout(() => {
+                hati.remove();
+            }, 6000);
+        }
+
+
+        function tutupPesan() {
+
+            document.getElementById("pesan").style.display = "none";
+
+        }
+
+    </script>
+
+</body>
+</html>
